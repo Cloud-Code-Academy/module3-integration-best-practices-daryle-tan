@@ -16,7 +16,7 @@ global class ExchangeRateScheduler implements Schedulable {
         // 2. Add error handling
         // 3. Consider adding logging if available
         } catch (Exception e) {
-            System.debug('There was an error updating the exchange rates: ' + e.getMessage());
+            System.debug(LoggingLevel.ERROR, 'There was an error updating the exchange rates: ' + e.getMessage());
         }    
     }
 }
