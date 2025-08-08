@@ -15,9 +15,20 @@ public class ExchangeRateService {
      * @return ExchangeRateWrapper containing the response data
      */
     public static ExchangeRateWrapper getLatestRates() {
+    // public static void getLatestRates() {
         // TODO: Implement the method to make a callout to the Exchange Rate API
-        
-        return null; // Replace with actual implementation
+        Http http = new Http();
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:' + NAMED_CREDENTIAL + '/latest/' + BASE_CURRENCY);
+        req.setMethod('GET');
+
+        HttpResponse res = http.send(req);
+        if (res.getStatusCode() >= 200 && res.getStatusCode() < 300) {
+            // System.debug(res.getBody());
+            return ExchangeRateWrapper.parse(res.getBody());
+        } else {
+            throw new CalloutException('Error: Failed response with status code: ' + res.getStatusCode());
+        }
     }
     
     /**
@@ -27,8 +38,9 @@ public class ExchangeRateService {
      */
     public static List<Exchange_Rate__c> processRates(ExchangeRateWrapper rateData) {
         // TODO: Implement the method to process rates and create/update records
-        
-        return null; // Replace with actual implementation
+        List<Exchange_Rate__c> rateList = rateData.toExchangeRates();
+        upsert rateList;
+        return rateList; // Replace with actual implementation
     }
     
     /**
@@ -38,9 +50,10 @@ public class ExchangeRateService {
     public static List<Exchange_Rate__c> updateExchangeRates() {
         // TODO: Implement the method to get and process rates
         // 1. Call getLatestRates to retrieve the data
+        ExchangeRateWrapper latestRates = getLatestRates();
         // 2. Call processRates to create/update records
-        // 3. Return the processed records
-        
-        return null; // Replace with actual implementation
+        List<Exchange_Rate__c> processedRatesList = processRates(latestRates);
+        // 3. Return the processed records     
+        return processedRatesList;
     }
 }
